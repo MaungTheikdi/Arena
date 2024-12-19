@@ -1,8 +1,8 @@
 <?php
 // For Mobile and API
 $host = 'localhost';
-$user = 'theikdimaung_arena_user';
-$pass = 'N0OWN70wu33x';
+$user = 'root';
+$pass = '';
 $db = 'theikdimaung_arena';
 
 // Create a new connection to the database
