@@ -1,4 +1,5 @@
-# Arena Entertainment Project
+# Arena Entertainment Project (Developed by Theikdi Maung)
+
 
 Arena Entertainment is a comprehensive software solution tailored for Arena Night Club, integrating web, mobile, and desktop applications to manage reservations, events, menus, and user memberships efficiently.
 
@@ -13,9 +14,6 @@ Arena Entertainment is a comprehensive software solution tailored for Arena Nigh
   - [User Table/Sofa Reservations](#user-table-sofa-reservations)
   - [Events Management](#events-management)
   - [Menus](#menus)
-- [Installation](#installation)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Overview
 
@@ -71,3 +69,16 @@ Arena Entertainment provides a seamless and interconnected experience for:
 1. Clone the repository:
    ```bash
    git clone https://github.com/MaungTheikdi/Arena.git
+
+### Android Application
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/MaungTheikdi/ArenaEnt.git
+
+### Card Creator
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/MaungTheikdi/CardCreator.git
+
+
+
