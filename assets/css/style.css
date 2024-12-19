@@ -1,0 +1,52 @@
+@media (min-width: 768px) {
+    body {
+        display: block;
+        margin: auto;
+        max-width: 768px;
+    }
+}
+.tdmErrorMessage{
+    color: red; 
+    background-color: black; 
+    padding: 0.3rem; 
+    margin-bottom: 0.3rem; 
+}
+
+.la {
+    font-size: 1.8rem;
+    color: white;
+  }
+  
+  a {
+    margin-top: -0.6rem;
+  }
+  
+  .tdm-button {
+    color: var(--bs-gray-100);
+  }
+  
+  .card-number {
+    color: whitesmoke;
+    font-size: 0.8rem;
+  }
+  
+  .arena-sofa {
+    background-color: #d5bcfc;
+    border-radius: 1rem;
+    padding: 1rem;
+  }
+  
+  .pay-link {
+    text-decoration: initial;
+  }
+  
+  .row {
+    margin-left: 0rem;
+    margin-right: 0rem;
+  }
+  
+  .arena-bg {
+    background: #190038;
+  }
+  
+  
