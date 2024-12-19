@@ -1,7 +1,7 @@
 <?php  
 $host = 'localhost';  
-$user = 'theikdimaung_arena_user';  
-$password = 'N0OWN70wu33x';  
+$user = 'root';  
+$password = '';  
 $database = 'theikdimaung_arena';  
 
 $conn = new mysqli($host, $user, $password, $database);  
