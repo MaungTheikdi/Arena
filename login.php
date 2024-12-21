@@ -1,9 +1,57 @@
+<?php
+session_start();
+include 'api/db.php'; // Ensure this connects to your database correctly
+$errorMessage = '';
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $phone = trim($_POST['phone']);
+    $password = trim($_POST['password']);
+
+    // Validate inputs
+    if (empty($phone) || empty($password)) {
+        $errorMessage = 'Please fill in all fields.';
+    } else {
+        // Check user credentials
+        $stmt = $conn->prepare("SELECT user_id, name, password_hash FROM users WHERE phone = ?");
+        $stmt->bind_param("s", $phone);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($userId, $name, $hashedPassword);
+            $stmt->fetch();
+
+            // Verify password
+            if (password_verify($password, $hashedPassword)) {
+                // Set session variables
+                $_SESSION['user_id'] = $userId;
+                $_SESSION['name'] = $name;
+
+                // Set cookies if "Remember me" is checked
+                if (isset($_POST['rememberMe']) && $_POST['rememberMe'] === 'remember-me') {
+                    $expiry = time() + (30 * 24 * 60 * 60); // 30 days
+                    setcookie('user_id', $userId, $expiry, '/arena', 'https://theikdimaung.com', true, false);
+                    setcookie('name', $name, $expiry, '/arena', 'https://theikdimaung.com', true, false);
+                }
+
+                // Redirect to index page
+                header("Location: index.php");
+                exit;
+            } else {
+                $errorMessage = 'Invalid password.';
+            }
+        } else {
+            $errorMessage = 'User not found.';
+        }
+        $stmt->close();
+    }
+}
+?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
 
 <head>
-    <script src="assets/js/color-modes.js"></script>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -13,7 +61,7 @@
     <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sign-in/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
 
-    <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/dist/css/bootstrap.min__.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
 
     <!-- Custom styles for this template -->
@@ -173,7 +221,7 @@
 
 
     <main class="form-signin w-100 m-auto">
-        <form id="loginForm">
+        <form id="" action="login.php" method="post">
             <img class="mb-4" src="assets/img/logo.jpeg" alt="" width="72" height="72">
 
             <h1 class="h3 mb-3 fw-normal">Login</h1>
@@ -204,56 +252,56 @@
         </form>
     </main>
     <script src="assets/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="assets/js/color-modes.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <script>  
-        $(document).ready(function() {  
-            $('#loginForm').on('submit', function(event) {  
-                event.preventDefault(); // Prevent default form submission  
-                
-                // Clear previous error messages  
-                $('#errorMessage').hide();  
+<script>
+    $(document).ready(function() {
+        $('#loginForm').on('submit', function(event) {
+            event.preventDefault();
 
-                // Get form data  
-                var formData = {  
-                    phone: $('#phone').val(),  
-                    password: $('#password').val(),  
-                    remember: $('#rememberMe').is(':checked') ? 1 : 0  
-                };  
+            // Clear previous error messages
+            $('#errorMessage').hide();
 
-                // Send data to API for login  
-                $.ajax({  
-                    type: 'POST',  
-                    url: 'api/login.php',  
-                    data: formData,  
-                    dataType: 'json',  
-                    success: function(response) {  
-                        if (response.success) {  
-                            // Store user data in session storage  
-                            sessionStorage.setItem('user_id', response.user_id);  
-                            sessionStorage.setItem('name', response.name);  
+            // Get form data
+            var formData = {
+                phone: $('#phone').val(),
+                password: $('#password').val(),
+                remember: $('#rememberMe').is(':checked') ? 1 : 0
+            };
 
-                            // If 'Remember Me' is checked, set a cookie  
-                            if (formData.remember) {  
-                                // Set cookie for user_id and name for 30 days  
-                                var expirationDate = new Date();  
-                                expirationDate.setTime(expirationDate.getTime() + (30*24*60*60*1000)); // 30 days  
-                                document.cookie = "user_id=" + response.user_id + "; expires=" + expirationDate.toUTCString() + "; path=/";  
-                                document.cookie = "name=" + response.name + "; expires=" + expirationDate.toUTCString() + "; path=/";  
-                            }  
-                            window.location.href = 'index.php'; 
-                        } else {  
-                            $('#errorMessage').text(response.message).show();  
-                        }  
-                    },  
-                    error: function() {  
-                        $('#errorMessage').text('An error occurred while processing your request.').show();  
-                    }  
-                });  
-            });  
-        });  
-    </script>  
+            // Send data to API for login
+            $.ajax({
+                type: 'POST',
+                url: 'https://theikdimaung.com/arena/api/login.php', // Use full URL for production
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        // Store user data in session storage
+                        sessionStorage.setItem('user_id', response.user_id);
+                        sessionStorage.setItem('name', response.name);
+
+                        // If 'Remember Me' is checked, set a cookie
+                        if (formData.remember) {
+                            var expirationDate = new Date();
+                            expirationDate.setTime(expirationDate.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days
+                            document.cookie = "user_id=" + response.user_id + "; expires=" + expirationDate.toUTCString() + "; path=/; domain=theikdimaung.com; Secure";
+                            document.cookie = "name=" + response.name + "; expires=" + expirationDate.toUTCString() + "; path=/; domain=theikdimaung.com; Secure";
+                        }
+                        window.location.href = 'index.php';
+                    } else {
+                        $('#errorMessage').text(response.message).show();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    $('#errorMessage').text('An error occurred while processing your request.').show();
+                }
+            });
+        });
+    });
+</script>
+
 
 </body>
 

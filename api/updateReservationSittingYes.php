@@ -1,6 +1,6 @@
 <?php
 header("Content-Type: application/json");
-require 'db.php'; // Replace with your DB connection file
+require 'db.php'; 
 
 if (isset($_POST['user_id']) && isset($_POST['reservation_id'])) {
     $user_id = intval($_POST['user_id']);

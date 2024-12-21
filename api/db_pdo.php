@@ -1,8 +1,8 @@
 <?php
 // For Web Users
 $servername = "localhost";
-$username = "theikdimaung_arena_user";
-$password = "N0OWN70wu33x";
+$username = "root";
+$password = "";
 $database = "theikdimaung_arena";
 
 try {

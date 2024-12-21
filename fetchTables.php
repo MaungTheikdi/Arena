@@ -68,9 +68,6 @@ $tables = $arena->getTables($date);
         </div>
         <?php endforeach; ?>
     </div>
-    <div class="row fixed-bottom px-3 py-3 bg-primary">
-        <div class="col"><a class="btn btn-info float-end" role="button" href="reservation.html">Continue</a></div>
-    </div>
 
     <!-- Modal -->
     <div class="modal fade" id="tableInfoModal" tabindex="-1" aria-labelledby="tableInfoModalLabel" aria-hidden="true">
@@ -99,7 +96,7 @@ $tables = $arena->getTables($date);
     <script>
         function updateURLWithDate() { 
             const selectedDate = document.getElementById('date-picker').value; 
-            const baseUrl = "<?php echo 'http://localhost/arena/fetchTables.php'; ?>"; 
+            const baseUrl = "<?php echo 'https://theikdimaung.com/arena/fetchTables.php'; ?>"; 
             window.location.href = `${baseUrl}?date=${selectedDate}`; 
         }
 

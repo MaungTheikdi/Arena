@@ -1,7 +1,4 @@
-
-<?php include_once 'header.php'; 
-
-?>
+<?php include_once 'header.php'; ?>
 
 <?php 
 include('phpqrcode/qrlib.php');
@@ -23,10 +20,15 @@ if ($userData) {
     $userCardNumber = $userData['card_number'] ;
     $userType = $userData['member_type'] ; 
     $userWalletBalance = $userData['wallet_balance'] ;
-    $userCreatedDate = $userData['created_date'] ;    
+    $userCreatedDate = $userData['created_date'] ;   
+    
+    //$file = 'qrcode.png';
+    //QRcode::png($userCardNumber, $file); 
+
 } else {  
     echo "User not found.";  
 }  
+
 // Get events data
 $eventsData = $arena->getEvents();
 if ($eventsData) {
@@ -57,8 +59,6 @@ if ($reservationsData && is_array($reservationsData)) {
 // Get days
 $days = $arenaUtil->getNext7Days();
 
-
-
 ?>
 
 <body class="arena-bg">
@@ -82,6 +82,9 @@ $days = $arenaUtil->getNext7Days();
             </div>
         </div>
     </div>
+
+    <!--  -->
+
     <div class="row my-2">
         <div class="col d-flex flex-row justify-content-evenly align-items-center text-center"><a class="btn btn-sm mx-1 tdm-button" role="button" data-bs-target="#modal-QR" data-bs-toggle="modal"><i class="la la-qrcode d-block"></i>Quick</a><a class="btn btn-sm mx-1 tdm-button" role="button" href="payBill.php"><i class="la la-money d-block"></i>PayBill</a><a class="btn btn-sm mx-1 tdm-button" role="button" href="transactionHistory.php"><i class="la la-list d-block"></i>History</a><a class="btn btn-sm mx-1 tdm-button" role="button" href="profile.php"><i class="la la-user d-block"></i>Profile</a></div>
     </div>
@@ -139,13 +142,10 @@ $days = $arenaUtil->getNext7Days();
             </div>
         </div>
     </div>
-    <script src="assets/dist/js/bootstrap.min.js"></script>
-    <script>
-        const container = document.querySelector('.scroll-container');
-        container.style.scrollBehavior = 'smooth';
-    </script>
-
+    <!--  -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="assets/dist/js/bootstrap.min.js"></script>
+    <script src="assets/js/tdm.js"></script>
     <script>
         $(document).ready(function() {
             $('#updateToYes').on('click', function() {
@@ -154,7 +154,7 @@ $days = $arenaUtil->getNext7Days();
 
                 if (user_id && reservation_id) {
                     $.ajax({
-                        url: 'http://localhost/arena/api/updateReservationSittingYes.php',
+                        url: 'https://theikdimaung.com/arena/api/updateReservationSittingYes.php',
                         type: 'POST',
                         data: { user_id: user_id.trim(), reservation_id: reservation_id.trim() },
                         dataType: 'json',

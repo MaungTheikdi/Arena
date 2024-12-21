@@ -1,26 +1,30 @@
 <?php
+// Start the session
+session_start();
 date_default_timezone_set('Asia/Yangon');
 
-session_start();
+/*$url = $_SERVER['REQUEST_URI'];
+$path = parse_url($url, PHP_URL_PATH);
+$file = basename($path);*/
+
 $userLoggedIn = false;
 
-// Check if session variables are set
+// Check session first
 if (isset($_SESSION['user_id']) && isset($_SESSION['name'])) {
     $userLoggedIn = true;
-} else {
-    // Fallback to cookie-based validation
-    if (isset($_COOKIE['user_id']) && isset($_COOKIE['name'])) {
-        $_SESSION['user_id'] = $_COOKIE['user_id'];
-        $_SESSION['name'] = $_COOKIE['name'];
-        $userLoggedIn = true;
-    }
+} elseif (isset($_COOKIE['user_id']) && isset($_COOKIE['name'])) {
+    // Sanitize and assign cookie values to session
+    $_SESSION['user_id'] = htmlspecialchars($_COOKIE['user_id']);
+    $_SESSION['name'] = htmlspecialchars($_COOKIE['name']);
+    $userLoggedIn = true;
 }
 
-// Redirect to login if not logged in
+// Redirect if not logged in
 if (!$userLoggedIn) {
     header("Location: login.php");
     exit;
 }
+
 
 require_once 'api/db_pdo.php';
 ?>
@@ -107,7 +111,7 @@ require_once 'api/db_pdo.php';
             width: 100px;
         }
 
-        .standing_table{
+        .standing_table {
             background-color: #F8A508;
             border-radius: 1rem;
             padding: 1rem;
@@ -115,7 +119,8 @@ require_once 'api/db_pdo.php';
             color: black;
             width: 100px;
         }
-        .regular_sofa{
+
+        .regular_sofa {
             background-color: #00FD03;
             border-radius: 1rem;
             padding: 1rem;
@@ -123,7 +128,8 @@ require_once 'api/db_pdo.php';
             color: black;
             width: 100px;
         }
-        .bronze_sofa{
+
+        .bronze_sofa {
             background-color: #13B1F2;
             border-radius: 1rem;
             padding: 1rem;
@@ -131,7 +137,8 @@ require_once 'api/db_pdo.php';
             color: black;
             width: 100px;
         }
-        .silver_sofa{
+
+        .silver_sofa {
             background-color: #FA62FF;
             border-radius: 1rem;
             padding: 1rem;
@@ -139,7 +146,8 @@ require_once 'api/db_pdo.php';
             color: black;
             width: 100px;
         }
-        .diamond_sofa{
+
+        .diamond_sofa {
             background-color: #06F8EF;
             border-radius: 1rem;
             padding: 1rem;
@@ -147,7 +155,8 @@ require_once 'api/db_pdo.php';
             color: black;
             width: 100px;
         }
-        .booked_sofa{
+
+        .booked_sofa {
             background-color: #D70000;
             border-radius: 1rem;
             padding: 1rem;
@@ -155,6 +164,5 @@ require_once 'api/db_pdo.php';
             color: black;
             width: 100px;
         }
-
     </style>
 </head>

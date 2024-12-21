@@ -120,6 +120,37 @@ class Arena {
         }
     }
 
+    // getTransaction with transaction_id
+    public function getTransaction($transaction_id, $user_id){
+        try {
+            $stmt = $this->db->prepare("SELECT * FROM transactions WHERE transaction_id = :transaction_id AND user_id = :user_id ");
+            $stmt->bindParam(':transaction_id', $transaction_id);  
+            $stmt->bindParam(':user_id', $user_id); 
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            header('Location: 404.php');
+        }
+    }
+
+    // getReservationByID
+    public function getReservationById($reservation_id){
+        try {
+            $stmt = $this->db->prepare("SELECT 
+                                        t.table_name,
+                                        p.description
+                                        FROM `reservations` r
+                                        LEFT JOIN tables t ON t.table_id = r.table_id
+                                        LEFT JOIN packages p ON p.package_id = r.package_id
+                                        WHERE r.reservation_id = :reservation_id");
+            $stmt->bindParam(':reservation_id', $reservation_id);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            header('Location: 404.php');
+        }
+    }
+
     // getEvents function
     public function getEvents(){
         try {

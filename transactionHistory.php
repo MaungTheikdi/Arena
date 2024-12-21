@@ -17,13 +17,14 @@ $transactions = $arena->getUserTransactions($_SESSION['user_id']);
         <div class="col-12">
             <div class="card p-2 m-2">
                 <div class="card-body">
-                    <h4 class="card-title"><?= $transaction['transaction_type'] ?></h4>
+                    <h4 class="card-title"><a href="<?= 'invoice.php?transaction_id='. $transaction['transaction_id'];?>"><?= $transaction['transaction_type'] ?></a></h4>
+                    <?php if ($transaction['table_name'] !== null): ?>
                     <h6 class="text-muted card-subtitle mb-2"><?= $transaction['table_type'] .' | ' .  $transaction['table_name'] ?></h6>
+                    <?php endif; ?>
                     <div class="d-flex justify-content-between">
                         <p class="text-black-50"><?= $transaction['transaction_id'] .' : '. $transaction['transaction_date'] ?></p>
                         <p class="card-text"><?= $transaction['amount'].' MMK' ?></p>
-                    </div>
-                    
+                    </div>                    
                 </div>
             </div>
         </div>

@@ -1,5 +1,4 @@
 <?php include_once 'header.php'; ?>
-
 <?php
 include_once('Arena.php');
 include_once('ArenaUtil.php');
@@ -49,6 +48,10 @@ $amount = $data->amount;
                     <div><i class="far fa-calendar-alt me-2"></i><span id="reservationDate"><?php echo $reservationDate; ?></span></div>
                     <div><i class="fas fa-dollar-sign me-2"></i><span id="amount"><?php echo $amount; ?></span></div>
                 </div>
+                <!-- Error Show here -->
+                 <div id="error" class="alert alert-danger" role="alert"></div>
+                 <div id="success" class="alert alert-success" role="alert"></div>
+
             </form>
         </div>
         <div class="col-12 mb-2">  
@@ -88,10 +91,13 @@ $amount = $data->amount;
             <a href="index.php">Go Back Home</a>
         </div>
     </div>
-    <script src="assets/dist/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  
+    <script src="assets/dist/js/bootstrap.min.js"></script>
+    
 <script>  
     $(document).ready(function() {  
+        $('#error').hide();
+        $('#success').hide();
         $('#paymentSubmit').on('click', function(e) {  
             e.preventDefault(); // Prevent default anchor click behavior  
 
@@ -104,15 +110,22 @@ $amount = $data->amount;
 
             var walletBalance = parseInt($('#walletBalance').text()) || 0; // Get wallet balance  
             
+            // Check the packageId value
+            if (packageId === '') {  
+                $('#error').text('Please Choose package');
+                $('#error').show();
+                return; // Stop execution of AJAX request  
+            }
+
             // Check if wallet balance is sufficient  
             if (walletBalance < amount) {  
-                alert('You do not have enough balance to make this reservation.'); // Show error message  
+                $('#error').text('Insufficient balance');
+                $('#error').show();
                 return; // Stop execution of AJAX request  
             }  
-
             // AJAX request  
             $.ajax({  
-                url: 'api/makeReservation.php',  
+                url: 'https://theikdimaung.com/arena/api/makeReservation.php',  
                 type: 'POST',  
                 contentType: 'application/json', // Send as JSON  
                 data: JSON.stringify({  
@@ -124,7 +137,7 @@ $amount = $data->amount;
                 }),  
                 success: function(response) {  
                     if (response.success) {  
-                        alert(response.message); // Show success message  
+                        alert(response.message); // Show success message 
                         // Optionally reset the form or update the UI                        
                     } else {  
                         alert('Error: ' + response.message); // Show error message  

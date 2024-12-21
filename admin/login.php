@@ -1,9 +1,57 @@
+<?php
+session_start();
+include 'db.php'; // Ensure this connects to your database correctly
+$errorMessage = '';
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $phone = '999999999';
+    $password = trim($_POST['password']);
+
+    // Validate inputs
+    if (empty($phone) || empty($password)) {
+        $errorMessage = 'Please fill in all fields.';
+    } else {
+        // Check user credentials
+        $stmt = $conn->prepare("SELECT user_id, name, password_hash FROM users WHERE phone = ?");
+        $stmt->bind_param("s", $phone);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($userId, $name, $hashedPassword);
+            $stmt->fetch();
+
+            // Verify password
+            if (password_verify($password, $hashedPassword)) {
+                // Set session variables
+                $_SESSION['user_id'] = $userId;
+                $_SESSION['name'] = $name;
+
+                // Set cookies if "Remember me" is checked
+                if (isset($_POST['rememberMe']) && $_POST['rememberMe'] === 'remember-me') {
+                    $expiry = time() + (30 * 24 * 60 * 60); // 30 days
+                    setcookie('user_id', $userId, $expiry, '/arena', 'https://theikdimaung.com', true, false);
+                    setcookie('name', $name, $expiry, '/arena', 'https://theikdimaung.com', true, false);
+                }
+
+                // Redirect to index page
+                header("Location: index.php");
+                exit;
+            } else {
+                $errorMessage = 'Invalid password.';
+            }
+        } else {
+            $errorMessage = 'User not found.';
+        }
+        $stmt->close();
+    }
+}
+?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
 
 <head>
-    <script src="assets/js/color-modes.js"></script>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -13,10 +61,11 @@
     <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sign-in/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
 
-    <link href="assets/dist/css/bootstrap.min__.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="../assets/dist/css/bootstrap.min__.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+
     <!-- Custom styles for this template -->
-    <link href="assets/css/login.css" rel="stylesheet">
+    <link href="../assets/css/login.css" rel="stylesheet">
 
     <style>
         .bd-placeholder-img {
@@ -96,6 +145,9 @@
             display: block !important;
         }
     </style>
+
+
+    
 </head>
 
 <body class="d-flex align-items-center py-4 bg-body-tertiary">
@@ -169,94 +221,87 @@
 
 
     <main class="form-signin w-100 m-auto">
-        <form id="registrationForm">
-            <img class="mb-4" src="assets/img/logo.jpeg" alt="" width="72" height="72">
+        <form id="" action="login.php" method="post">
+            <img class="mb-4" src="../assets/img/logo.jpeg" alt="" width="72" height="72">
 
-            <h1 class="h3 mb-3 fw-normal">Registration</h1>
-
-            <div class="form-floating mb-2">
-                <input type="text" class="form-control" id="name" name="name" placeholder="Kyaw Kyaw">
-                <label for="name">Name</label>
-            </div>
+            <h1 class="h3 mb-3 fw-normal">Login</h1>
 
             <div class="form-floating mb-2">
                 <input type="phone" class="form-control" id="phone" name="phone" placeholder="09XXXXXXXX">
-                <label for="phone">09XXXXXXXX</label>
+                <label for="phone">Phone</label>
             </div>
             <div class="form-floating">
                 <input type="password" class="form-control" id="password" name="password" placeholder="Password">
                 <label for="password">Password</label>
             </div>
 
-            <div class="form-floating mb-2">
-                <img src="captcha.php" alt="CAPTCHA Image">
-                <input type="text" class="control" id="captcha" name="captcha" placeholder="Enter the code:" required>
+            
+
+            <div class="form-check text-start my-3">
+                <input class="form-check-input" type="checkbox" value="remember-me" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">
+                    Remember me
+                </label>
             </div>
 
             <div id="errorMessage" class="tdmErrorMessage" style="display: none;"></div>
 
-
-            <button class="btn btn-primary w-100 py-2" id="register" name="register" type="submit">Register</button>
-            <div class="text-center"><a href="login.php">Already Register? Login</a></div>
+            <button class="btn btn-primary w-100 py-2" type="submit">Login</button>
+            <div class="text-center" ><a href="register.php">Don't have an account? Register!</a></div>
             <p class="mt-5 mb-3 text-body-secondary"></p>
         </form>
-        
-
     </main>
-    <script src="assets/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/color-modes.js"></script>
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/color-modes.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <script>  
-        $(document).ready(function() {  
-            $('#registrationForm').on('submit', function(event) {  
-                event.preventDefault(); // Prevent the form from submitting the default way  
-                
-                // Clear previous error messages  
-                $('#errorMessage').hide();  
+<script>
+    $(document).ready(function() {
+        $('#loginForm').on('submit', function(event) {
+            event.preventDefault();
 
-                // Get form data  
-                var formData = {  
-                    name: $('#name').val(),  
-                    phone: $('#phone').val(),  
-                    password: $('#password').val(),  
-                    captcha: $('#captcha').val()  
-                };  
+            // Clear previous error messages
+            $('#errorMessage').hide();
 
-                // Validate CAPTCHA  
-                $.ajax({  
-                    type: 'POST',  
-                    url: 'validate_captcha.php', // Add this new PHP file for CAPTCHA validation  
-                    data: { captcha: formData.captcha },  
-                    success: function(captchaResponse) {  
-                        if (captchaResponse.success) {  
-                            // Send registration data to the API  
-                            $.ajax({  
-                                type: 'POST',  
-                                url: 'api/register.php',  
-                                data: formData,  
-                                dataType: 'json',  
-                                success: function(response) {  
-                                    if (response.success) {  
-                                        alert(response.message);  
-                                        // Optional: Redirect to login page or another page  
-                                        window.location.href = 'login.php';  
-                                    } else {  
-                                        $('#errorMessage').text(response.message).show();  
-                                    }  
-                                },  
-                                error: function() {  
-                                    $('#errorMessage').text('An error occurred while processing your request.').show();  
-                                }  
-                            });  
-                        } else {  
-                            $('#errorMessage').text(captchaResponse.message).show();  
-                        }  
-                    }  
-                });  
-            });  
-        });  
-    </script>
+            // Get form data
+            var formData = {
+                phone: $('#phone').val(),
+                password: $('#password').val(),
+                remember: $('#rememberMe').is(':checked') ? 1 : 0
+            };
+
+            // Send data to API for login
+            $.ajax({
+                type: 'POST',
+                url: 'https://theikdimaung.com/arena/api/login.php', // Use full URL for production
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        // Store user data in session storage
+                        sessionStorage.setItem('user_id', response.user_id);
+                        sessionStorage.setItem('name', response.name);
+
+                        // If 'Remember Me' is checked, set a cookie
+                        if (formData.remember) {
+                            var expirationDate = new Date();
+                            expirationDate.setTime(expirationDate.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days
+                            document.cookie = "user_id=" + response.user_id + "; expires=" + expirationDate.toUTCString() + "; path=/; domain=theikdimaung.com; Secure";
+                            document.cookie = "name=" + response.name + "; expires=" + expirationDate.toUTCString() + "; path=/; domain=theikdimaung.com; Secure";
+                        }
+                        window.location.href = 'index.php';
+                    } else {
+                        $('#errorMessage').text(response.message).show();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    $('#errorMessage').text('An error occurred while processing your request.').show();
+                }
+            });
+        });
+    });
+</script>
+
 
 </body>
 
